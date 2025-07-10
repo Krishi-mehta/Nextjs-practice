@@ -1,4 +1,4 @@
-import { clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs";
 import { removeRole, setRole } from "./actions";
 
 export default async function Admin() {
