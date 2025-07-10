@@ -1,21 +1,19 @@
-import { clerkClient } from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/nextjs/server";
 import { removeRole, setRole } from "./actions";
 
 export default async function Admin() {
-  const users = (await clerkClient.users.getUserList()).data;
+  const client = await clerkClient();
 
-  if (!users || users.length === 0) {
-    return <p>No users found.</p>;
-  }
+  const users = (await client.users.getUserList()).data;
 
   return (
     <>
-      {users.map((user, index) => {
+      {users.map((user) => {
         return (
           <div
             key={user.id}
             className={`flex items-center justify-between gap-4 p-4 ${
-              index % 2 === 0
+              users.indexOf(user) % 2 === 0
                 ? "bg-neutral-50 dark:bg-neutral-800"
                 : "bg-white dark:bg-neutral-900"
             }`}

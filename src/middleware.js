@@ -1,27 +1,24 @@
-import { clerkMiddleware } from '@clerk/nextjs';
+import { clerkMiddleware, createRouteMatcher} from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
+const isProtectedRoute = createRouteMatcher(["/user-profile"])
+
+const isAdminRoute = createRouteMatcher(["/admin(.*)"])
+
+
 export default clerkMiddleware(async (auth, req) => {
-  const pathname = req.nextUrl.pathname;
-
-  // Check if admin route
-  const isAdmin = /^\/admin(\/.*)?$/.test(pathname);
-  // Check if protected route
-  const isProtected = pathname.startsWith("/user-profile");
-
-  if (isAdmin && (await auth()).sessionClaims?.metadata?.role !== "admin") {
-    const url = new URL("/", req.url);
-    return NextResponse.redirect(url);
+  if(isAdminRoute(req) && (await auth()).sessionClaims?.metadata?.role !== "admin"){
+    const url = new URL("/", req.url)
+    return NextResponse.redirect(url)
   }
-
-  if (isProtected) {
-    await auth().protect();
-  }
+  if (isProtectedRoute(req)) await auth.protect();  
 });
 
 export const config = {
   matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
