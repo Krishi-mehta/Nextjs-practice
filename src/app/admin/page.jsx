@@ -1,19 +1,21 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
-
 import { removeRole, setRole } from "./actions";
 
 export default async function Admin() {
-  // 👇 Directly use clerkClient
   const users = (await clerkClient.users.getUserList()).data;
+
+  if (!users || users.length === 0) {
+    return <p>No users found.</p>;
+  }
 
   return (
     <>
-      {users.map((user) => {
+      {users.map((user, index) => {
         return (
           <div
             key={user.id}
             className={`flex items-center justify-between gap-4 p-4 ${
-              users.indexOf(user) % 2 === 0
+              index % 2 === 0
                 ? "bg-neutral-50 dark:bg-neutral-800"
                 : "bg-white dark:bg-neutral-900"
             }`}
