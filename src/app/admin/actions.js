@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@clerk/nextjs";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+
 import { Roles } from "utils/roles";
 import { revalidatePath } from "next/cache";
 
